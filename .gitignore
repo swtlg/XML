@@ -1,12 +1,81 @@
-*.class
+package chap01;
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+import java.io.IOException;
 
-# Package Files #
-*.jar
-*.war
-*.ear
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+public class demo01 {
+
+	/**
+	 * 对XMl文档的解析
+	 * @param args
+	 */
+	public static void getvalue(Node node){
+		NamedNodeMap namedNodeMap=node.getAttributes();
+		for(int i=0;i<namedNodeMap.getLength();i++){
+			Node attrNode=namedNodeMap.item(i);
+			System.out.println(attrNode.getNodeName()+":"+attrNode.getNodeValue());
+		}
+	}
+	public static void main(String[] args) {
+		//获得解析器工厂实例
+		DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+		try {
+			//获得解析器
+			DocumentBuilder builder=factory.newDocumentBuilder();
+			
+			//解析获得文档
+			Document doc=builder.parse("src/student.xml");
+			
+			//获得文本节点的树
+			NodeList nodelist=doc.getElementsByTagName("students");
+			
+			//获得树的第一个子节点，转化为元素，因为元素 Element是继承自Node类。
+			Element element=(Element)nodelist.item(0);
+			
+			//继续根据节点名称获得所有满足条件的元素的子节点
+			NodeList list=element.getElementsByTagName("student");
+			
+			//此表示节点名字TagName为“student”的子节点的个数
+			System.out.println(list.getLength());
+			
+			//遍历循环出所有字节中各自的子节点
+			for(int i=0;i<list.getLength();i++){
+				
+				//将每个子节点转化为元素
+				Element e=(Element)list.item(i);
+				
+				/*
+				 * 通过获取元素节点内部中子节点的名字获得NodeList，然后获取第一个node节点，
+				 * 然后获取子节点，然后子节点也是可以有多个的，获取到的为NodeList，获得第一个子节点
+				 * ，然后获得子节点的value   .getNodeValue();
+				 */
+				System.out.println("姓名："+e.getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue());
+				System.out.println("性别："+e.getElementsByTagName("sex").item(0).getChildNodes().item(0).getNodeValue());
+				System.out.println("年龄："+e.getElementsByTagName("age").item(0).getChildNodes().item(0).getNodeValue());
+				getvalue(e.getElementsByTagName("name").item(0));
+				getvalue(e.getElementsByTagName("age").item(0));
+				getvalue(e.getElementsByTagName("sex").item(0));
+				System.out.println("======================================");
+			}
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
